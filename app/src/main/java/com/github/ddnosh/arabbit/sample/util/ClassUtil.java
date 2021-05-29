@@ -23,7 +23,9 @@ public class ClassUtil {
 
     private static <T> Class<T> getGenericClass(Class<?> klass, Class<?> filterClass) {
         Type type = klass.getGenericSuperclass();
-        if (type == null || !(type instanceof ParameterizedType)) return null;
+        if (type == null || !(type instanceof ParameterizedType)) {
+            return null;
+        }
         ParameterizedType parameterizedType = (ParameterizedType) type;
         Type[] types = parameterizedType.getActualTypeArguments();
         for (Type t : types) {

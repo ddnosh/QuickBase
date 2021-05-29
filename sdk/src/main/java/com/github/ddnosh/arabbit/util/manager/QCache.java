@@ -96,10 +96,10 @@ public class QCache {
      * update cache! stream.close(); } catch(FileNotFoundException e){
      * e.printStackTrace() }
      */
-    class xFileOutputStream extends FileOutputStream {
+    class XFileOutputStream extends FileOutputStream {
         File file;
 
-        public xFileOutputStream(File file) throws FileNotFoundException {
+        public XFileOutputStream(File file) throws FileNotFoundException {
             super(file);
             this.file = file;
         }
@@ -164,8 +164,9 @@ public class QCache {
      */
     public String getAsString(String key) {
         File file = mCache.get(key);
-        if (!file.exists())
+        if (!file.exists()) {
             return null;
+        }
         boolean removeFile = false;
         BufferedReader in = null;
         try {
@@ -192,8 +193,9 @@ public class QCache {
                     e.printStackTrace();
                 }
             }
-            if (removeFile)
+            if (removeFile) {
                 remove(key);
+            }
         }
     }
 
@@ -331,7 +333,7 @@ public class QCache {
      *             if the file can not be created.
      */
     public OutputStream put(String key) throws FileNotFoundException {
-        return new xFileOutputStream(mCache.newFile(key));
+        return new XFileOutputStream(mCache.newFile(key));
     }
 
     /**
@@ -344,8 +346,9 @@ public class QCache {
      */
     public InputStream get(String key) throws FileNotFoundException {
         File file = mCache.get(key);
-        if (!file.exists())
+        if (!file.exists()) {
             return null;
+        }
         return new FileInputStream(file);
     }
 
@@ -374,8 +377,9 @@ public class QCache {
         boolean removeFile = false;
         try {
             File file = mCache.get(key);
-            if (!file.exists())
+            if (!file.exists()) {
                 return null;
+            }
             RAFile = new RandomAccessFile(file, "r");
             byte[] byteArray = new byte[(int) RAFile.length()];
             RAFile.read(byteArray);
@@ -396,8 +400,9 @@ public class QCache {
                     e.printStackTrace();
                 }
             }
-            if (removeFile)
+            if (removeFile) {
                 remove(key);
+            }
         }
     }
 
@@ -445,6 +450,7 @@ public class QCache {
             try {
                 oos.close();
             } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -470,14 +476,16 @@ public class QCache {
                 return null;
             } finally {
                 try {
-                    if (bais != null)
+                    if (bais != null) {
                         bais.close();
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
                 try {
-                    if (ois != null)
+                    if (ois != null) {
                         ois.close();
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -499,7 +507,7 @@ public class QCache {
      *            保存的bitmap数据
      */
     public void put(String key, Bitmap value) {
-        put(key, Utils.Bitmap2Bytes(value));
+        put(key, Utils.bitmap2Bytes(value));
     }
 
     /**
@@ -513,7 +521,7 @@ public class QCache {
      *            保存的时间，单位：秒
      */
     public void put(String key, Bitmap value, int saveTime) {
-        put(key, Utils.Bitmap2Bytes(value), saveTime);
+        put(key, Utils.bitmap2Bytes(value), saveTime);
     }
 
     /**
@@ -526,7 +534,7 @@ public class QCache {
         if (getAsBinary(key) == null) {
             return null;
         }
-        return Utils.Bytes2Bimap(getAsBinary(key));
+        return Utils.bytes2Bimap(getAsBinary(key));
     }
 
     // =======================================
@@ -568,7 +576,7 @@ public class QCache {
         if (getAsBinary(key) == null) {
             return null;
         }
-        return Utils.bitmap2Drawable(Utils.Bytes2Bimap(getAsBinary(key)));
+        return Utils.bitmap2Drawable(Utils.bytes2Bimap(getAsBinary(key)));
     }
 
     /**
@@ -579,8 +587,9 @@ public class QCache {
      */
     public File file(String key) {
         File f = mCache.newFile(key);
-        if (f.exists())
+        if (f.exists()) {
             return f;
+        }
         return null;
     }
 
@@ -827,8 +836,9 @@ public class QCache {
 
         private static byte[] copyOfRange(byte[] original, int from, int to) {
             int newLength = to - from;
-            if (newLength < 0)
+            if (newLength < 0) {
                 throw new IllegalArgumentException(from + " > " + to);
+            }
             byte[] copy = new byte[newLength];
             System.arraycopy(original, from, copy, 0, Math.min(original.length - from, newLength));
             return copy;
@@ -847,7 +857,7 @@ public class QCache {
         /*
          * Bitmap → byte[]
          */
-        private static byte[] Bitmap2Bytes(Bitmap bm) {
+        private static byte[] bitmap2Bytes(Bitmap bm) {
             if (bm == null) {
                 return null;
             }
@@ -859,7 +869,7 @@ public class QCache {
         /*
          * byte[] → Bitmap
          */
-        private static Bitmap Bytes2Bimap(byte[] b) {
+        private static Bitmap bytes2Bimap(byte[] b) {
             if (b.length == 0) {
                 return null;
             }

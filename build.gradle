@@ -1,5 +1,6 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 apply plugin: 'io.codearte.nexus-staging'
+apply from: 'checkstyle.gradle'
 
 buildscript {
     ext {

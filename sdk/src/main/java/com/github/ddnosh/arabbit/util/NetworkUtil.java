@@ -121,6 +121,7 @@ public class NetworkUtil {
             httpUrl.connect();
             result = true;
         } catch (IOException e) {
+            e.printStackTrace();
         } finally {
             if (null != httpUrl) {
                 httpUrl.disconnect();

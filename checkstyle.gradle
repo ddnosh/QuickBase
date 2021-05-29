@@ -1,0 +1,26 @@
+
+allprojects {
+    project ->
+        // 代码规范检查
+        apply plugin: 'checkstyle'
+        checkstyle {
+            configFile rootProject.file('config/quality/checkstyle/checkstyle.xml')
+            toolVersion '8.2'
+            ignoreFailures false
+            showViolations true
+        }
+        task checkstyle(type: Checkstyle) {
+            source 'src/main/java'
+            include '**/*.java'
+            exclude '**/gen/**'
+            classpath = files()
+        }
+        tasks.whenTaskAdded { task ->
+            boolean runCheckStyleOnLocalDev = "${enable_checkstyle}".toBoolean()
+            boolean runCheckStyleTask = task.name == 'prepareReleaseDependencies' || (runCheckStyleOnLocalDev && task.name == 'preBuild')
+            if (runCheckStyleTask) { //prepareReleaseDependencies, preBuild
+                println("checkstyle run task.name ：" + task.name)
+                task.dependsOn 'checkstyle'
+            }
+        }
+}
