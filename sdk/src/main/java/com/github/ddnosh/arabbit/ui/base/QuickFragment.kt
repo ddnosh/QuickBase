@@ -7,14 +7,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
-import androidx.databinding.ViewDataBinding
 
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import com.github.ddnosh.arabbit.util.StringUtil
-import com.google.android.material.snackbar.Snackbar
+import com.github.ddnosh.arabbit.util.ToastUtil
 import com.trello.lifecycle2.android.lifecycle.AndroidLifecycle
 import com.trello.rxlifecycle3.LifecycleProvider
 
@@ -191,7 +188,8 @@ abstract class QuickFragment : Fragment() {
      */
     protected fun showToast(msg: String?) {
         if (null != msg && !StringUtil.isEmpty(msg)) {
-            Snackbar.make((mContext as Activity).window.decorView, msg, Snackbar.LENGTH_SHORT).show()
+//            Snackbar.make((mContext as Activity).window.decorView, msg, Snackbar.LENGTH_SHORT).show()
+            ToastUtil.showToast(msg)
         }
     }
 

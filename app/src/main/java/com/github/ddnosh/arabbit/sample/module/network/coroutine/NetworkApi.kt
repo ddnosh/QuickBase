@@ -1,8 +1,5 @@
 package com.github.ddnosh.arabbit.sample.module.network.coroutine
 
-import com.franmontiel.persistentcookiejar.PersistentCookieJar
-import com.franmontiel.persistentcookiejar.cache.SetCookieCache
-import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor
 import com.github.ddnosh.arabbit.module.network.BaseNetworkApi
 import com.github.ddnosh.arabbit.sample.module.network.coroutine.interceptor.CacheInterceptor
 import com.github.ddnosh.arabbit.module.network.interceptor.logging.LogInterceptor
@@ -37,7 +34,7 @@ class NetworkApi : BaseNetworkApi() {
             //设置缓存配置 缓存最大10M
             cache(Cache(File(MyApplication.instance.cacheDir, "cxk_cache"), 10 * 1024 * 1024))
             //添加Cookies自动持久化
-            cookieJar(cookieJar)
+//            cookieJar(cookieJar)
             //示例：添加公共heads 注意要设置在日志拦截器之前，不然Log中会不显示head信息
             addInterceptor(MyHeadInterceptor())
             //添加缓存拦截器 可传入缓存天数，不传默认7天
@@ -60,10 +57,6 @@ class NetworkApi : BaseNetworkApi() {
         return builder.apply {
             addConverterFactory(GsonConverterFactory.create(GsonBuilder().create()))
         }
-    }
-
-    val cookieJar: PersistentCookieJar by lazy {
-        PersistentCookieJar(SetCookieCache(), SharedPrefsCookiePersistor(MyApplication.instance))
     }
 
 }

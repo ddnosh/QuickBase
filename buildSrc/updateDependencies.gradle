@@ -1,0 +1,102 @@
+/**
+ * 将versions.gradle/xVersion.gradle中配置的版本信息生成到src/main/groovy/Dependencies.groovy中
+ * 执行该task方法：
+ * 方法1:
+ * New: 在gradle task列表面板点击'Execute Gradle Task'(类似大象的)按钮,在输入框输入'-p buildSrc updateDependencies'然后点回车键;
+ * Deprecated: 在gradle task列表面板点击'Run Gradle Task'(类似大象的)按钮,在'Gradle Project'栏选中buildSrc模块,在'Command line'栏输入'updateDependencies'然后点击'OK';
+ * 方法2:
+ * New: 在Terminal输入'gradlew -p buildSrc updateDependencies'然后执行
+ * Deprecated: 在Terminal输入'gradlew updateDependencies'然后执行
+ * 方法3:
+ * AS->Edit Configurations->Gradle,点击左上角'+'添加配置:
+ * Name: $projectName:buildSrc [updateDependencies]
+ * Gradle project: $projectName/buildSrc
+ * Tasks: updateDependencies
+ * 点击'Apply'保存此配置，后续在项目的 gradle task 列表中就可以找到此 task 双击执行了
+ */
+task("updateDependencies") {
+    String inputFilePath = "versions.gradle"
+    String outputFilePath = "src/main/groovy/Dependencies.groovy"
+
+    // 将inputFilePath声明为该Task的inputs
+    inputs.file(inputFilePath)
+    // 将outputFilePath声明为outputs
+    outputs.file(outputFilePath)
+
+    doLast {
+        File inputFile = file(inputFilePath)
+        if (!inputFile.exists()) {
+            return
+        }
+
+        String inputTxt = inputFile.text
+        StringBuilder builder = new StringBuilder()
+
+        /*
+         * 解析拼接版本object
+         */
+        builder.append("/**\n")
+                .append(" * 版本信息\n")
+                .append(" */\n")
+                .append("interface Versions {\n")
+
+        String startFlag = "/*<version>*/"
+        String endFlag = "/*</version>*/"
+
+        int start = inputTxt.indexOf(startFlag)
+        int end = inputTxt.indexOf(endFlag)
+
+        builder.append("    ")
+                .append(inputTxt.substring(start + startFlag.length(), end).trim())
+                .append("\n}\n\n")
+
+        /*
+        * 解析拼接依赖object
+        */
+        builder.append("/**\n")
+                .append(" * 依赖库路径\n")
+                .append(" */\n")
+                .append("interface Deps {\n")
+
+        startFlag = "/*<dep>*/"
+        endFlag = "/*</dep>*/"
+
+        start = inputTxt.indexOf(startFlag)
+        end = inputTxt.indexOf(endFlag)
+
+        String depsTxt = inputTxt.substring(start + startFlag.length(), end).trim()
+
+        int implementationIndex
+        int doubleSlashIndex
+
+        while (true) {
+            implementationIndex = depsTxt.indexOf("implementation")
+            if (implementationIndex == -1) {
+                break
+            }
+            doubleSlashIndex = depsTxt.lastIndexOf("//", implementationIndex)
+            String namePart
+            String name
+            while (true) {
+                namePart = depsTxt.substring(doubleSlashIndex + 2, implementationIndex)
+                name = namePart.split(":")[0].trim()
+                if (!name.contains("/")) {
+                    break
+                }
+                doubleSlashIndex = depsTxt.lastIndexOf("//", doubleSlashIndex - 2)
+            }
+            depsTxt = depsTxt.replaceFirst("implementation", String.format("def %s =", name))
+        }
+
+        builder.append("    ")
+                .append(depsTxt)
+                .append("\n}\n")
+
+        String resultTxt = builder.toString()
+
+        file(outputFilePath).withPrintWriter("utf-8", { writer ->
+            writer.print(resultTxt)
+            writer.flush()
+        })
+    }
+}

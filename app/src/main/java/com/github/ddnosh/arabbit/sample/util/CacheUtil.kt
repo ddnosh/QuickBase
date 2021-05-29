@@ -12,7 +12,7 @@ object CacheUtil {
      */
     fun getUser(): UserInfo? {
         val kv = MMKV.mmkvWithID("app")
-        val userStr = kv.decodeString("user")
+        val userStr = kv?.decodeString("user")
         return if (TextUtils.isEmpty(userStr)) {
            null
         } else {
@@ -26,10 +26,10 @@ object CacheUtil {
     fun setUser(userResponse: UserInfo?) {
         val kv = MMKV.mmkvWithID("app")
         if (userResponse == null) {
-            kv.encode("user", "")
+            kv?.encode("user", "")
             setIsLogin(false)
         } else {
-            kv.encode("user", Gson().toJson(userResponse))
+            kv?.encode("user", Gson().toJson(userResponse))
             setIsLogin(true)
         }
 
@@ -40,7 +40,7 @@ object CacheUtil {
      */
     fun isLogin(): Boolean {
         val kv = MMKV.mmkvWithID("app")
-        return kv.decodeBool("login", false)
+        return kv?.decodeBool("login", false) == true
     }
 
     /**
@@ -48,7 +48,7 @@ object CacheUtil {
      */
     fun setIsLogin(isLogin: Boolean) {
         val kv = MMKV.mmkvWithID("app")
-        kv.encode("login", isLogin)
+        kv?.encode("login", isLogin)
     }
 
     /**
@@ -56,14 +56,14 @@ object CacheUtil {
      */
     fun isFirst(): Boolean {
         val kv = MMKV.mmkvWithID("app")
-        return kv.decodeBool("first", true)
+        return kv?.decodeBool("first", true) == true
     }
     /**
      * 是否是第一次登陆
      */
     fun setFirst(first:Boolean): Boolean {
         val kv = MMKV.mmkvWithID("app")
-        return kv.encode("first", first)
+        return kv?.encode("first", first) == true
     }
 
     /**
@@ -71,21 +71,21 @@ object CacheUtil {
      */
     fun isNeedTop(): Boolean {
         val kv = MMKV.mmkvWithID("app")
-        return kv.decodeBool("top", true)
+        return kv?.decodeBool("top", true) == true
     }
     /**
      * 设置首页是否开启获取指定文章
      */
     fun setIsNeedTop(isNeedTop:Boolean): Boolean {
         val kv = MMKV.mmkvWithID("app")
-        return kv.encode("top", isNeedTop)
+        return kv?.encode("top", isNeedTop) == true
     }
     /**
      * 获取搜索历史缓存数据
      */
     fun getSearchHistoryData(): ArrayList<String> {
         val kv = MMKV.mmkvWithID("cache")
-        val searchCacheStr =  kv.decodeString("history")
+        val searchCacheStr =  kv?.decodeString("history")
         if (!TextUtils.isEmpty(searchCacheStr)) {
             return Gson().fromJson(searchCacheStr
                 , object : TypeToken<ArrayList<String>>() {}.type)
@@ -95,6 +95,6 @@ object CacheUtil {
 
     fun setSearchHistoryData(searchResponseStr: String) {
         val kv = MMKV.mmkvWithID("cache")
-        kv.encode("history",searchResponseStr)
+        kv?.encode("history",searchResponseStr)
     }
 }
